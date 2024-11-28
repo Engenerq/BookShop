@@ -39,6 +39,7 @@ INSTALLED_APPS = [
 
     # Installed apps
     'rest_framework',
+    'drf_yasg',
 
     # Self apps
     'books',

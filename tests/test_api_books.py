@@ -1,4 +1,5 @@
 import pytest
+from django.urls import reverse
 from rest_framework import status
 
 from books.models import Book
@@ -6,7 +7,8 @@ from books.models import Book
 
 @pytest.mark.django_db
 def test_get_book(client, create_books):
-    response = client.get("/api/books/")
+    # response = client.get("/api/books/")
+    response = client.get(reverse("book-list"))
     data = response.json()
     result = data['results']
     assert response.status_code == status.HTTP_200_OK
@@ -16,12 +18,14 @@ def test_get_book(client, create_books):
 @pytest.mark.django_db
 def test_get_book(client, create_many_books):
     books_create = create_many_books(10)
-    response = client.get("/api/books/", data={"limit": 5, "offset": 0})
+    # response = client.get("/api/books/", data={"limit": 5, "offset": 0})
+    response = client.get(reverse("book-list"), data={"limit": 5, "offset": 0})
     data = response.json()
     result = data['results']
     assert response.status_code == status.HTTP_200_OK
     assert len(result) == 5
-    response_2 = client.get("/api/books/", data={"limit": 5, "offset": 5})
+    # response_2 = client.get("/api/books/", data={"limit": 5, "offset": 5})
+    response_2 = client.get(reverse("book-list"), data={"limit": 5, "offset": 5})
     data = response_2.json()
     result_2 = data['results']
     assert response_2.status_code == status.HTTP_200_OK
@@ -33,7 +37,8 @@ def test_get_book(client, create_many_books):
 
 @pytest.mark.django_db
 def test_filter_get_book(client, create_books, create_author):
-    response = client.get(f"/api/books/?author={create_author.id}")
+    # response = client.get(f"/api/books/?author={create_author.id}")
+    response = client.get(f'{reverse(f"book-list")}?author={create_author.id}')
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
     result = data['results']
@@ -49,7 +54,8 @@ def test_create_book(client, create_author):
         "count": 20,
     }
 
-    response = client.post("/api/books/", data=data)
+    # response = client.post("/api/books/", data=data)
+    response = client.post(reverse("book-list"), data=data)
 
     assert response.status_code == status.HTTP_201_CREATED
     assert Book.objects.filter(title=data["title"]).exists()
@@ -62,7 +68,8 @@ def test_update_book(client, create_books):
         "author": create_books.author.id,
         "count": 10,
     }
-    response = client.put(f"/api/books/{create_books.id}/", data=data)
+    # response = client.put(f"/api/books/{create_books.id}/", data=data)
+    response = client.put(reverse('book-detail', kwargs={"pk": create_books.id}), data=data)
 
     assert response.status_code == status.HTTP_200_OK
 
@@ -76,7 +83,8 @@ def test_update_book(client, create_books):
 @pytest.mark.django_db
 def test_buy_book(client, create_books):
     data_count = create_books.count
-    response = client.post(f"/api/books/{create_books.id}/buy/")
+    # response = client.post(f"/api/books/{create_books.id}/buy/")
+    response = client.post(reverse("book-buy", kwargs={"pk": create_books.id}))
 
     assert response.status_code == status.HTTP_200_OK
 
@@ -89,7 +97,8 @@ def test_buy_book(client, create_books):
 def test_zero_book(client, create_books):
     create_books.count = 0
     create_books.save()
-    response = client.post(f"/api/books/{create_books.id}/buy/")
+    # response = client.post(f"/api/books/{create_books.id}/buy/")
+    response = client.post(reverse("book-buy", kwargs={"pk": create_books.id}))
 
     assert response.status_code == status.HTTP_400_BAD_REQUEST
     assert response.json()['message'] == 'Fuck'
