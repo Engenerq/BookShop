@@ -1,6 +1,6 @@
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-from BookShop.settings.django import BASE_DIR
+from core.settings.django import BASE_DIR
 
 DATABASES = {
     'default': {

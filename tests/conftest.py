@@ -13,4 +13,4 @@ def client():
 
 @pytest.fixture(scope='session', autouse=True)
 def set_django_settings_module():
-    os.environ['DJANGO_SETTINGS_MODULE'] = 'BookShop.settings'
+    os.environ['DJANGO_SETTINGS_MODULE'] = 'core.settings'

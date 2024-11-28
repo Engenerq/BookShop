@@ -1,4 +1,4 @@
-from BookShop.settings.django import BASE_DIR
+from core.settings.django import BASE_DIR
 
 TEMPLATES = [
     {
